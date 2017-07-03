@@ -3,7 +3,16 @@ package app
 import (
 	"net/http"
 	"fmt"
+	"appengine"
+	"appengine/urlfetch"
+	"encoding/json"
+	"io/ioutil"
 )
+
+type Track struct {
+	Name string `json:"Name"`
+	Stations []string `json:"Stations"`
+}
 
 func init() {
 	http.HandleFunc("/pata", handlePata)
@@ -65,6 +74,29 @@ func handlePata(w http.ResponseWriter, r *http.Request) {
 
 func handleTransfer(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+	ctx := appengine.NewContext(r)
+	client := urlfetch.Client(ctx)
+	resp, err := client.Get("http://fantasy-transit.appspot.com/net?format=json");
+	if err != nil {
+		http.Error(w,  err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer resp.Body.Close()
+
+	body, err:= ioutil.ReadAll(resp.Body);
+	if err != nil {
+		return
+	}
+
+	var tracks []Track
+	if err := json.Unmarshal(body, &tracks); err != nil {
+		return;
+	}
+
+	for _, t := range tracks {
+		fmt.Fprintf(w, "%s", t.Name)
+	}
 	fmt.Fprintf(w, `
 		<!DOCTYPE html>
 		<html>
