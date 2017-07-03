@@ -94,9 +94,6 @@ func handleTransfer(w http.ResponseWriter, r *http.Request) {
 		return;
 	}
 
-	for _, t := range tracks {
-		fmt.Fprintf(w, "%s", t.Name)
-	}
 	fmt.Fprintf(w, `
 		<!DOCTYPE html>
 		<html>
@@ -107,10 +104,29 @@ func handleTransfer(w http.ResponseWriter, r *http.Request) {
 		<form action="/search">
 			出発:
 			<select name="from"><br>
+			`)
+
+	for _, t := range tracks {
+		fmt.Fprintf(w, `<option disabled>%s</option>`, t.Name)
+		for _, s := range t.Stations {
+			fmt.Fprintf(w, `<option>%s</option>`, s)
+		}
+	}
+
+	fmt.Fprintf(w, `
 			</select>
 			<br>
 			到着:
 			<select name="to"><br>
+			`)
+	for _, t := range tracks {
+		fmt.Fprintf(w, `<option disabled>%s</option>`, t.Name)
+		for _, s := range t.Stations {
+			fmt.Fprintf(w, `<option>%s</option>`, s)
+		}
+	}
+
+	fmt.Fprintf(w, `
 			</select>
 			<br>
 		  <input type=submit value"乗り換え案内">
