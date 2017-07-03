@@ -6,8 +6,9 @@ import (
 )
 
 func init() {
-	http.HandleFunc("/", handlePata)
-	http.HandleFunc("/Transfer", handleTransfer)
+	http.HandleFunc("/pata", handlePata)
+	http.HandleFunc("/transfer", handleTransfer)
+	http.HandleFunc("/search", handleSearch)
 }
 
 func handlePata(w http.ResponseWriter, r *http.Request) {
@@ -64,5 +65,30 @@ func handlePata(w http.ResponseWriter, r *http.Request) {
 
 func handleTransfer(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	fmt.Fprintf(w, `Hello, World!`)
+	fmt.Fprintf(w, `
+		<!DOCTYPE html>
+		<html>
+		<head>
+		  <title>乗り換え案内</title>
+		</head>
+		<body>
+		<form action="/search">
+			出発:
+			<select name="from"><br>
+			</select>
+			<br>
+			到着:
+			<select name="to"><br>
+			</select>
+			<br>
+		  <input type=submit value"乗り換え案内">
+		</form>
+		</body>
+		</html>
+		`)
+}
+
+func handleSearch(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	fmt.Fprintf(w, `result`)
 }
