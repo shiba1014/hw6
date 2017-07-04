@@ -7,7 +7,6 @@ import (
 	"appengine/urlfetch"
 	"encoding/json"
 	"io/ioutil"
-	"log"
 )
 
 type Track struct {
@@ -150,7 +149,8 @@ func handleSearch(w http.ResponseWriter, r *http.Request) {
 	// fmt.Fprintf(w, `%s`,trainList)
 	// fmt.Fprintf(w, `%s<br>`,searchRoute(from, to))
 	searchRoute(from, to)
-	fmt.Fprintf(w, `%s<br>`,routes)
+	bestWay := searchBestRoute()
+	fmt.Fprintf(w, `%s<br>`, bestWay)
 	routes = nil
 }
 
@@ -202,4 +202,14 @@ func contains(s []string, e string) bool {
 		}
 	}
 	return false
+}
+
+func searchBestRoute() []string {
+	var minRoute = routes[0]
+	for _, r := range routes {
+		if len(minRoute) > len(r) {
+			minRoute = r
+		}
+	}
+	return minRoute
 }
