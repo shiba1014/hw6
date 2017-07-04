@@ -14,6 +14,8 @@ type Track struct {
 	Stations []string `json:"Stations"`
 }
 
+var trainList = make(map[string][]string)
+
 func init() {
 	http.HandleFunc("/pata", handlePata)
 	http.HandleFunc("/transfer", handleTransfer)
@@ -94,6 +96,8 @@ func handleTransfer(w http.ResponseWriter, r *http.Request) {
 		return;
 	}
 
+	makeAdjacencyList(tracks)
+
 	fmt.Fprintf(w, `
 		<!DOCTYPE html>
 		<html>
@@ -138,5 +142,28 @@ func handleTransfer(w http.ResponseWriter, r *http.Request) {
 
 func handleSearch(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	fmt.Fprintf(w, `result`)
+	from := r.FormValue("from")
+	to := r.FormValue("to")
+	fmt.Fprintf(w, `<font size="+5">%sから%sまでの乗り換え案内</font><br>`, from, to)
+	fmt.Fprintf(w, `%s<br>`,searchRote(from, to))
+	fmt.Fprintf(w, `%s`,trainList)
+}
+
+func makeAdjacencyList(tracks []Track){
+	for _, t := range tracks {
+		for pos, s := range t.Stations {
+			list := trainList[s]
+			if pos > 0 {
+				list = append(list, t.Stations[pos - 1])
+			}
+			if pos < len(t.Stations) - 1 {
+				list = append(list, t.Stations[pos + 1])
+			}
+			trainList[s] = list
+		}
+	}
+}
+
+func searchRote(from, to string)(string){
+	return "yeah"
 }
