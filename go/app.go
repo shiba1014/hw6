@@ -144,7 +144,7 @@ func handleSearch(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	from := r.FormValue("from")
 	to := r.FormValue("to")
-	fmt.Fprintf(w, `<font size="+5">%sから%sまでの乗り換え案内</font><br>`, from, to)
+	fmt.Fprintf(w, `<font size="+3">%sから%sまでの乗り換え案内</font><br>`, from, to)
 	fmt.Fprintf(w, `%s<br>`,searchRote(from, to))
 	fmt.Fprintf(w, `%s`,trainList)
 }
@@ -154,9 +154,15 @@ func makeAdjacencyList(tracks []Track){
 		for pos, s := range t.Stations {
 			list := trainList[s]
 			if pos > 0 {
+				if contains(list, t.Stations[pos - 1]) == true {
+					continue
+				}
 				list = append(list, t.Stations[pos - 1])
 			}
 			if pos < len(t.Stations) - 1 {
+				if contains(list, t.Stations[pos + 1]) == true {
+					continue
+				}
 				list = append(list, t.Stations[pos + 1])
 			}
 			trainList[s] = list
@@ -166,4 +172,13 @@ func makeAdjacencyList(tracks []Track){
 
 func searchRote(from, to string)(string){
 	return "yeah"
+}
+
+func contains(s []string, e string) bool {
+	for _, v := range s {
+		if e == v {
+			return true
+		}
+	}
+	return false
 }
