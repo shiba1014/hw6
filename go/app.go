@@ -15,6 +15,7 @@ type Track struct {
 }
 
 var trainList = make(map[string][]string)
+var routes = make([][]string, 0)
 
 func init() {
 	http.HandleFunc("/pata", handlePata)
@@ -145,8 +146,11 @@ func handleSearch(w http.ResponseWriter, r *http.Request) {
 	from := r.FormValue("from")
 	to := r.FormValue("to")
 	fmt.Fprintf(w, `<font size="+3">%sから%sまでの乗り換え案内</font><br>`, from, to)
-	fmt.Fprintf(w, `%s<br>`,searchRote(from, to))
-	fmt.Fprintf(w, `%s`,trainList)
+	// fmt.Fprintf(w, `%s`,trainList)
+	// fmt.Fprintf(w, `%s<br>`,searchRoute(from, to))
+	searchRoute(from, to)
+	fmt.Fprintf(w, `%s<br>`,routes)
+	routes = nil
 }
 
 func makeAdjacencyList(tracks []Track){
@@ -170,8 +174,22 @@ func makeAdjacencyList(tracks []Track){
 	}
 }
 
-func searchRote(from, to string)(string){
-	return "yeah"
+func searchRoute(from, to string) {
+	path := make([]string, 0)
+	dfs(to, append(path, from))
+}
+
+func dfs(to string, path []string) {
+	current := path[len(path) - 1]
+	if current == to {
+		routes = append(routes, path)
+	} else {
+		for _, x := range trainList[current] {
+			if !contains(path, x) {
+				dfs(to, append(path, x))
+			}
+		}
+	}
 }
 
 func contains(s []string, e string) bool {
