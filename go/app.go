@@ -7,6 +7,7 @@ import (
 	"appengine/urlfetch"
 	"encoding/json"
 	"io/ioutil"
+	"log"
 )
 
 type Track struct {
@@ -182,7 +183,9 @@ func searchRoute(from, to string) {
 func dfs(to string, path []string) {
 	current := path[len(path) - 1]
 	if current == to {
-		routes = append(routes, path)
+		answer := make([]string, len(path))
+		copy(answer, path)
+		routes = append(routes, answer)
 	} else {
 		for _, x := range trainList[current] {
 			if !contains(path, x) {
