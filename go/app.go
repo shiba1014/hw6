@@ -145,12 +145,15 @@ func handleSearch(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	from := r.FormValue("from")
 	to := r.FormValue("to")
-	fmt.Fprintf(w, `<font size="+3">%sから%sまでの乗り換え案内</font><br>`, from, to)
-	// fmt.Fprintf(w, `%s`,trainList)
-	// fmt.Fprintf(w, `%s<br>`,searchRoute(from, to))
+	fmt.Fprintf(w, `<font size="+3">%sから%sまでの乗り換え案内</font><br><br>`, from, to)
 	searchRoute(from, to)
 	bestWay := searchBestRoute()
-	fmt.Fprintf(w, `%s<br>`, bestWay)
+	for pos, s := range bestWay {
+		fmt.Fprintf(w, `%s<br>`, s)
+		if pos < len(bestWay) - 2 {
+			fmt.Fprintf(w, `↓`)
+		}
+	}
 	routes = nil
 }
 
