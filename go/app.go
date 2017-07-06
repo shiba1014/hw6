@@ -112,7 +112,7 @@ func handleTransfer(w http.ResponseWriter, r *http.Request) {
 			`)
 
 	for _, t := range tracks {
-		fmt.Fprintf(w, `<option disabled>%s</option>`, t.Name)
+		fmt.Fprintf(w, `<optgroup label=%s>`, t.Name)
 		for _, s := range t.Stations {
 			fmt.Fprintf(w, `<option>%s</option>`, s)
 		}
@@ -125,7 +125,7 @@ func handleTransfer(w http.ResponseWriter, r *http.Request) {
 			<select name="to"><br>
 			`)
 	for _, t := range tracks {
-		fmt.Fprintf(w, `<option disabled>%s</option>`, t.Name)
+		fmt.Fprintf(w, `<optgroup label=%s>`, t.Name)
 		for _, s := range t.Stations {
 			fmt.Fprintf(w, `<option>%s</option>`, s)
 		}
